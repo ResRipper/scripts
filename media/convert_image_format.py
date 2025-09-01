@@ -85,6 +85,8 @@ if __name__ == '__main__':
     folders: list[str] = next(walk('.'))[1]
     if folders == []:
         sys.exit('No subfolders found.')
+    else:
+        folders.sort()
 
     for folder in folders:
         convert(folder)
