@@ -14,7 +14,7 @@ from subprocess import run
 
 
 def __conv_image(file: str):
-    run(['mogrify', '-format', 'webp', file])
+    run(['mogrify', '-format', 'webp', '-quality', '100', file])
 
 
 def image_clean(items: list[str]):
