@@ -5,9 +5,24 @@
 
 import sys
 from argparse import ArgumentParser
+from multiprocessing import Pool
 from os import chdir
 from os import walk
+from subprocess import DEVNULL
 from subprocess import run
+
+
+def __compress(folder: str):
+    """Compress files into a single zip file.
+
+    Args:
+        folder (str): Folder that contain files
+    """
+    print(f'Compressing: {folder}')
+    chdir(folder)
+    run(f"zip -9 -r ../'{folder}'.zip *", shell=True, stdout=DEVNULL)
+    chdir('../')
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -19,7 +34,5 @@ if __name__ == '__main__':
     if folders == []:
         sys.exit('No subfolders found.')
 
-    for folder in folders:
-        chdir(folder)
-        run(['zip', '-9', '-r', f'../{folder}.zip', '*'])
-        chdir('../')
+    with Pool() as pool:
+        pool.map(__compress, folders)
