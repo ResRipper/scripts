@@ -32,7 +32,7 @@ def image_clean(items: list[str]):
             else:
                 os.remove(item.rsplit('.', 1)[0] + '.webp')
         except FileNotFoundError:
-            continue
+            pass
 
 
 def convert(folder: str) -> bool:
