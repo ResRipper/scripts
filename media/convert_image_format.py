@@ -10,10 +10,18 @@ from os import chdir
 from os import listdir
 from os import walk
 from os.path import getsize
+from subprocess import check_output
 from subprocess import run
 
 
 def __conv_image(file: str):
+    # Webp image size limit: 16384 x 16384 pixels
+    image_size = check_output(['identify', file]).decode().strip().split(' ')[2].split('x')
+    for i in image_size:
+        if int(i) > 16384:
+            print(f'Skipping {file}, size exceeds limit: {image_size[0]}x{image_size[1]}')
+            return
+
     run(['mogrify', '-format', 'webp', '-quality', '100', file])
 
 
@@ -57,7 +65,7 @@ def convert(folder: str) -> bool:
             target_items.append(item)
 
     if len(target_items) == 0:
-        print('No images found.')
+        print('No images found or all images are webp format.')
         return False
     elif not processed:
         print(f'File count: {len(target_items)}')
