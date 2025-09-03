@@ -67,7 +67,7 @@ def convert(folder: str) -> bool:
             target_items.append(item)
 
     if len(target_items) == 0:
-        print('No images found or all images are webp format.')
+        print('No image found or all images are webp format.')
         return False
     elif not processed:
         print(f'File count: {len(target_items)}')
