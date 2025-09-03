@@ -2,6 +2,8 @@
 # Convert images in folders to webp format and only keeping the samller files
 # Prerequisites: imagemagick, libwebp
 
+# Make sure to check for warnings and errors in the output!
+
 import os
 import sys
 from argparse import ArgumentParser
@@ -19,7 +21,7 @@ def __conv_image(file: str):
     image_size = check_output(['identify', file]).decode().strip().split(' ')[2].split('x')
     for i in image_size:
         if int(i) > 16384:
-            print(f'Skipping {file}, size exceeds limit: {image_size[0]}x{image_size[1]}')
+            print(f'Error: skipping {file}, size exceeds limit: {image_size[0]}x{image_size[1]}')
             return
 
     run(['mogrify', '-format', 'webp', '-quality', '100', file])
