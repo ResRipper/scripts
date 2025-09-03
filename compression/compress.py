@@ -20,7 +20,8 @@ def __compress(folder: str):
     """
     print(f'Compressing: {folder}')
     chdir(folder)
-    run(f"zip -9 -r ../'{folder}'.zip *", shell=True, stdout=DEVNULL)
+    folder = folder.replace("'", "\\'")
+    run(f"zip -9 -r ../$'{folder}'.zip *", shell=True, stdout=DEVNULL)
     chdir('../')
 
 
