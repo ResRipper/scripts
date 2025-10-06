@@ -39,7 +39,6 @@ if __name__ == '__main__':
         if file.rsplit('.', 1)[1] in ('7z', 'zip', 'tar', 'rar'):
             job_list.append(file)
 
-    print(job_list)
     if job_list == []:
         sys.exit('No compressed files found.')
     else:
