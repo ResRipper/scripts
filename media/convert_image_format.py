@@ -18,7 +18,7 @@ from subprocess import run
 
 def __conv_image(file: str):
     # Webp image size limit: 16384 x 16384 pixels
-    image_size = check_output(['identify', file]).decode().strip().split(' ')[2].split('x')
+    image_size = check_output(['identify', file]).decode().removeprefix(file).strip().split(' ')[1].split('x')
     for i in image_size:
         if int(i) > 16384:
             print(f'Error: skipping {file}, size exceeds limit: {image_size[0]}x{image_size[1]}')
