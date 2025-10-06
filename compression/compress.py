@@ -8,6 +8,7 @@ from argparse import ArgumentParser
 from multiprocessing import Pool
 from os import chdir
 from os import walk
+from shutil import rmtree
 from subprocess import DEVNULL
 from subprocess import run
 
@@ -23,6 +24,7 @@ def __compress(folder: str):
     folder = folder.replace("'", "\\'")
     run(f"zip -9 -r ../$'{folder}'.zip *", shell=True, stdout=DEVNULL)
     chdir('../')
+    rmtree(folder)
 
 
 if __name__ == '__main__':
