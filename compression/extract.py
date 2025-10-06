@@ -7,6 +7,7 @@ import sys
 from argparse import ArgumentParser
 from multiprocessing import Pool
 from os import chdir
+from os import remove
 from os import walk
 from subprocess import DEVNULL
 from subprocess import run
@@ -20,6 +21,7 @@ def __extract(file: str) -> None:
     """
     print(f'Processing: {file}')
     run(['7z', 'x', file, f'-o{file.rsplit(".", 1)[0]}'], stdout=DEVNULL)
+    remove(file)
 
 
 if __name__ == '__main__':
