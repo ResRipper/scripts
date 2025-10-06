@@ -24,25 +24,17 @@ def __conv_image(file: str):
             print(f'Error: skipping {file}, size exceeds limit: {image_size[0]}x{image_size[1]}')
             return
 
+    # Convert
     run(['mogrify', '-format', 'webp', '-quality', '100', file])
 
-
-def image_clean(items: list[str]):
-    """Remove larger image file.
-
-    Args:
-        items (list[str]): Image list (webp file not included)
-    """
-    print('Start removing larger files...')
-
-    for item in items:
-        try:
-            if getsize(item) > getsize(item.rsplit('.', 1)[0] + '.webp'):
-                os.remove(item)
-            else:
-                os.remove(item.rsplit('.', 1)[0] + '.webp')
-        except FileNotFoundError:
-            pass
+    # Remove larger file
+    try:
+        if getsize(file) > getsize(file.rsplit('.', 1)[0] + '.webp'):
+            os.remove(file)
+        else:
+            os.remove(file.rsplit('.', 1)[0] + '.webp')
+    except FileNotFoundError:
+        pass
 
 
 def convert(folder: str) -> bool:
@@ -76,12 +68,6 @@ def convert(folder: str) -> bool:
 
         with Pool() as pool:
             pool.map(__conv_image, target_items)
-
-        chdir('../')
-
-    chdir(folder)
-    image_clean(target_items)
-    chdir('../')
 
     return not processed
 
