@@ -68,6 +68,7 @@ def convert(folder: str) -> bool:
 
         with Pool() as pool:
             pool.map(__conv_image, target_items)
+            chdir('../')
 
     return not processed
 
