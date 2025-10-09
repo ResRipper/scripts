@@ -21,8 +21,7 @@ def __compress(folder: str):
     """
     print(f'Compressing: {folder}')
     chdir(folder)
-    folder = folder.replace("'", "\\'")
-    run(f"zip -9 -r ../$'{folder}'.zip *", shell=True, stdout=DEVNULL)
+    run(f"zip -9 -r ../$'{folder.replace("'", "\\'")}'.zip *", shell=True, stdout=DEVNULL)
     chdir('../')
     rmtree(folder)
 
