@@ -20,7 +20,7 @@ def __extract(file: str) -> None:
         file (str): File name with suffix
     """
     print(f'Processing: {file}')
-    run(['7z', 'x', file, f'-o{file.rsplit(".", 1)[0]}'], stdout=DEVNULL)
+    run(['7z', 'x', file, '-o*'], stdout=DEVNULL)
     remove(file)
 
 
