@@ -11,6 +11,7 @@ from os import remove
 from os import walk
 from subprocess import DEVNULL
 from subprocess import run
+from tarfile import is_tarfile
 
 
 def __extract(file: str) -> None:
@@ -20,7 +21,10 @@ def __extract(file: str) -> None:
         file (str): File name with suffix
     """
     print(f'Processing: {file}')
-    run(['7z', 'x', file, '-o*'], stdout=DEVNULL)
+    if is_tarfile(file):
+        run(['tar', '-xf', file, '--one-top-level'], stdout=DEVNULL)
+    else:
+        run(['7z', 'x', file, '-o*'], stdout=DEVNULL)
     remove(file)
 
 
@@ -38,7 +42,7 @@ if __name__ == '__main__':
 
     # Filter out files that are not compressed file
     for file in files:
-        if file.rsplit('.', 1)[1] in ('7z', 'zip', 'tar', 'rar'):
+        if file.rsplit('.', 1)[1].endswith(('.7z', '.rar', '.zip')) or is_tarfile(file):
             job_list.append(file)
 
     if job_list == []:
