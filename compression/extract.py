@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     # Filter out files that are not compressed file
     for file in files:
-        if file.rsplit('.', 1)[1].endswith(('.7z', '.rar', '.zip')) or is_tarfile(file):
+        if file.endswith(('.7z', '.rar', '.zip')) or is_tarfile(file):
             job_list.append(file)
 
     if job_list == []:
