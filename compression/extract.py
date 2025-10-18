@@ -34,16 +34,26 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     chdir(args.folder)
-    files: list[str] = next(walk('.'))[2]
+    files: list[str] = next(walk('.'))[2] # Files only
     if files == []:
         sys.exit('No subfolders found.')
 
     job_list = []
 
-    # Filter out files that are not compressed file
+    # Keep only compressed file
     for file in files:
         if file.endswith(('.7z', '.rar', '.zip')) or is_tarfile(file):
-            job_list.append(file)
+            # Exclude partially downloaded file
+            if not file.endswith(
+                (
+                    '.crdownload',  # Chrome
+                    '.download',    # Safari
+                    '.downloading', # Baidu Netdisk
+                    '.fdmdownload', # FDM
+                    '.part',        # Firefox
+                )
+            ):
+                job_list.append(file)
 
     if job_list == []:
         sys.exit('No compressed files found.')
