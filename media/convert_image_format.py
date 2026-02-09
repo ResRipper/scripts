@@ -25,7 +25,7 @@ def __conv_image(file: str):
             return
 
     # Convert
-    run(['mogrify', '-format', 'webp', '-quality', '100', file])
+    run(['mogrify', '-format', 'webp', '-define', 'webp:lossless=true', '-quality', '100', file])
 
     # Remove larger file
     try:
@@ -37,41 +37,32 @@ def __conv_image(file: str):
         pass
 
 
-def convert(folder: str) -> bool:
+def convert(folder: str) -> None:
     """Convert images to webp format and remove larger files.
 
     Args:
         folder (str): Folder that contain images
-
-    Returns:
-        bool: True if folder is processed
     """
     print('Current folder: ' + folder)
     items = listdir(folder)
 
-    processed = False
     target_items = []
 
     for item in items:
-        if item.endswith('.webp'):
-            processed = True
-        elif item.endswith(('.jpg', '.jpeg', '.png')):
+        if item.endswith(('gif', '.jpg', '.jpeg', '.png')):
             target_items.append(item)
 
     if len(target_items) == 0:
         print('No image found or all images are webp format.')
-        return False
-    elif not processed:
-        print(f'File count: {len(target_items)}')
+        return
 
-        chdir(folder)
+    print(f'File count: {len(target_items)}')
 
-        with Pool() as pool:
-            pool.map(__conv_image, target_items)
-            chdir('../')
+    chdir(folder)
 
-    return not processed
-
+    with Pool() as pool:
+        pool.map(__conv_image, target_items)
+        chdir('../')
 
 if __name__ == '__main__':
     parser = ArgumentParser()
