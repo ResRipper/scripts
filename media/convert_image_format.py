@@ -37,11 +37,12 @@ def __conv_image(file: str):
         pass
 
 
-def convert(folder: str) -> None:
+def convert(folder: str, parallel: int = os.process_cpu_count()) -> None:
     """Convert images to webp format and remove larger files.
 
     Args:
         folder (str): Folder that contain images
+        parallel (int): Number of files to be processed in parallel, default: avaliable CPU core count
     """
     print('Current folder: ' + folder)
     items = listdir(folder)
@@ -60,12 +61,18 @@ def convert(folder: str) -> None:
 
     chdir(folder)
 
-    with Pool() as pool:
+    with Pool(processes=parallel) as pool:
         pool.map(__conv_image, target_items)
         chdir('../')
 
 if __name__ == '__main__':
     parser = ArgumentParser()
+    parser.add_argument(
+        '-p', '--parallel',
+        type=int,
+        default=os.process_cpu_count(),
+        help='Number of files to be processed in parallel (default: Avaliable CPU core count)'
+    )
     parser.add_argument('folder', help='Folder to be processed')
     args = parser.parse_args()
 
@@ -77,6 +84,6 @@ if __name__ == '__main__':
         folders.sort()
 
     for folder in folders:
-        convert(folder)
+        convert(folder, parallel=args.parallel)
 
     print('Done.')
