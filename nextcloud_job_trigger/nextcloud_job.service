@@ -1,0 +1,10 @@
+# Put this file in /etc/systemd/system/
+[Unit]
+Description=Nextcloud background job trigger
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecCondition=docker exec -u www-data nextcloud /var/www/html/occ status -e
+ExecStart=docker exec -u www-data nextcloud php -f /var/www/html/cron.php
+KillMode=process

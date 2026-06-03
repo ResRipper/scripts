@@ -1,0 +1,10 @@
+# Put this file in /etc/systemd/system/
+[Unit]
+Description=Trigger Nextcloud background job every 5 minutes
+
+[Timer]
+OnCalendar=*:5/5
+Unit=nextcloud_job.service
+
+[Install]
+WantedBy=timers.target
