@@ -50,7 +50,7 @@ def convert(folder: str, parallel: int = os.process_cpu_count()) -> None:
     target_items = []
 
     for item in items:
-        if item.endswith(('gif', '.jpg', '.jpeg', '.png')):
+        if item.endswith(('.jpg', '.jpeg', '.png')):
             target_items.append(item)
 
     if len(target_items) == 0:
