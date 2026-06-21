@@ -139,6 +139,7 @@ def convert(folder: str, format: str, parallel: int) -> None:
 
     for item in target_items:
         __conv_image(format, item, parallel)
+        chdir('../')
 
 
 if __name__ == '__main__':
