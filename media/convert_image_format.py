@@ -50,8 +50,8 @@ def __conv_image(format: str, file: str, parallel: int):
                     run(['img2webp', '-quiet', '-lossless', '-min_size', file, '-o', f'{file_name}.webp'])
 
             case 'jxl':
-                # Lossless, max effort, default worker threads
-                command = ['cjxl', '--quiet', '-d', '0', '-e', '10', f'--num_threads={parallel}']
+                # Lossless, default worker threads
+                command = ['cjxl', '--quiet', '-d', '0', '-e', '8', f'--num_threads={parallel}']
                 match file.rsplit('.', 1)[-1]:
                     # cjxl doesn't support webp -> jxl natively
                     case 'webp':
