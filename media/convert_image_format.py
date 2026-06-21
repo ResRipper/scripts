@@ -130,7 +130,7 @@ def convert(folder: str, format: str, parallel: int) -> None:
                 continue
 
     if len(target_items) == 0:
-        print('No image found or all images are webp format.')
+        print('No convertable image found.')
         return
 
     print(f'File count: {len(target_items)}')
