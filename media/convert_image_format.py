@@ -139,7 +139,6 @@ def convert(folder: str, format: str, parallel: int) -> None:
 
     for item in target_items:
         __conv_image(format, item, parallel)
-        chdir('../')
 
 
 if __name__ == '__main__':
@@ -169,5 +168,6 @@ if __name__ == '__main__':
 
     for folder in folders:
         convert(folder, format=args.format, parallel=args.parallel)
+        chdir('../')
 
     print('Done.')
