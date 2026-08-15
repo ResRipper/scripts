@@ -11,6 +11,7 @@ import os
 import subprocess
 import sys
 from argparse import ArgumentParser
+from multiprocessing import Pool
 from os import chdir
 from os import listdir
 from os import walk
@@ -214,11 +215,10 @@ def convert(folder: str, format: str, parallel: int, keep: str) -> None:
         keep (str): Select which file to keep
     """
     print('Current folder: ' + folder)
-    items = listdir(folder)
 
     target_items = []
 
-    for item in items:
+    for item in listdir(folder):
         match item.rsplit('.', 1)[-1]:
             case 'jpg' | 'jpeg' | 'gif':
                 target_items.append(item)
@@ -242,8 +242,13 @@ def convert(folder: str, format: str, parallel: int, keep: str) -> None:
 
     chdir(folder)
 
-    for item in target_items:
-        __conv_image(format, item, parallel, keep)
+    if format == 'webp':
+        # Parallel
+        with Pool() as p:
+            p.starmap(__conv_image, [(format, item, parallel, keep) for item in target_items])
+    else:
+        for item in target_items:
+            __conv_image(format, item, parallel, keep)
 
 
 if __name__ == '__main__':
