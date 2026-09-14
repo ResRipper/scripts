@@ -13,9 +13,8 @@ import sys
 from argparse import ArgumentParser
 from multiprocessing import Pool
 from os import chdir
-from os import listdir
-from os import walk
 from os.path import getsize
+from pathlib import Path
 from secrets import token_hex
 from shutil import rmtree
 from subprocess import run
@@ -163,41 +162,41 @@ def __jxl(file: str, parallel: int):
             run([*command, file, f'{file_name}.jxl'])
 
 
-def __conv_image(format: str, file: str, parallel: int, keep: str):
+def __conv_image(format: str, file: Path, parallel: int, keep: str):
     """Convert image format.
 
     Args:
         format (str): Output image format
-        file (str): Source image file path
+        file (Path): Source image file path
         parallel (int): Number of worker threads for cjxl
         keep (str): Select which file to keep
     """
     try:
         match format:
             case 'webp':
-                __webp(file)
+                __webp(file.as_posix())
             case 'jxl':
-                __jxl(file, parallel)
+                __jxl(file.as_posix(), parallel)
             case 'png':
-                __png(file)
+                __png(file.as_posix())
             case _:
-                print(f'Unknown target format for file: {file}')
+                print(f'Unknown target format for file: {file.as_posix()}')
                 return
     except Exception:
-        print(f'Convert failed: {file}')
+        print(f'Convert failed: {file.as_posix()}')
         return
 
     # Remove file
     try:
         match keep:
             case 'smaller':
-                if getsize(file) > getsize(file.rsplit('.', 1)[0] + f'.{format}'):
-                    os.remove(file)
+                if file.stat().st_size > getsize(file.as_posix().rsplit('.', 1)[0] + f'.{format}'):
+                    file.unlink()
                 else:
-                    os.remove(file.rsplit('.', 1)[0] + f'.{format}')
+                    os.remove(file.as_posix().rsplit('.', 1)[0] + f'.{format}')
 
             case 'out':
-                os.remove(file)
+                file.unlink()
 
             case _:
                 raise ValueError(f'Unknown option: {keep}')
@@ -205,34 +204,37 @@ def __conv_image(format: str, file: str, parallel: int, keep: str):
         pass
 
 
-def convert(folder: str, format: str, parallel: int, keep: str) -> None:
+def convert(folder: Path, format: str, parallel: int, keep: str) -> None:
     """Convert process starter.
 
     Args:
-        folder (str): Folder that contain images
+        folder (Path): Folder that contain images
         format (str): Output image format
         parallel (int): Number of worker threads for cjxl
         keep (str): Select which file to keep
     """
-    print('Current folder: ' + folder)
+    print('Current folder: ' + folder.as_posix())
 
-    target_items = []
+    target_items: list[Path] = []
 
-    for item in listdir(folder):
-        match item.rsplit('.', 1)[-1]:
-            case 'jpg' | 'jpeg' | 'gif':
-                target_items.append(item)
-            case 'webp':
-                if format != 'webp':
+    for item in folder.iterdir():
+        if item.is_file():
+            match item.suffix:
+                case '.jpg' | '.jpeg' | '.gif':
                     target_items.append(item)
-            case 'jxl':
-                if format != 'jxl':
-                    target_items.append(item)
-            case 'png':
-                if format != 'png':
-                    target_items.append(item)
-            case _:
-                continue
+                case '.webp':
+                    if format != 'webp':
+                        target_items.append(item)
+                case '.jxl':
+                    if format != 'jxl':
+                        target_items.append(item)
+                case '.png':
+                    if format != 'png':
+                        target_items.append(item)
+                case _:
+                    continue
+        else:
+            continue
 
     if len(target_items) == 0:
         print('No convertable image found.')
@@ -240,7 +242,7 @@ def convert(folder: str, format: str, parallel: int, keep: str) -> None:
 
     print(f'File count: {len(target_items)}')
 
-    chdir(folder)
+    # chdir(folder)
 
     if format == 'webp':
         # Parallel
@@ -270,21 +272,22 @@ if __name__ == '__main__':
         default='smaller',
         help='Select which file to keep, options: out, smaller (default: smaller)',
     )
-    parser.add_argument('folder', help='Folder to be processed')
+    parser.add_argument('base_folder', type=Path, help='Folder to be processed')
     args = parser.parse_args()
 
     if args.parallel <= 0:
         raise ValueError('Invalid thread count.')
+    if args.format not in ('webp', 'jxl', 'png'):
+        raise ValueError(f'Unknown target type {args.format}.')
 
-    chdir(args.folder)
-    folders: list[str] = next(walk('.'))[1]
+    folders: list[Path] = [x for x in args.base_folder.iterdir() if x.is_dir()]
     if folders == []:
         sys.exit('No subfolders found.')
     else:
-        folders.sort()
+        folders = sorted(folders, key=lambda x: x.name)
 
     for folder in folders:
         convert(folder, format=args.format, parallel=args.parallel, keep=args.keep)
-        chdir('../')
+        # chdir('../')
 
     print('Done.')
