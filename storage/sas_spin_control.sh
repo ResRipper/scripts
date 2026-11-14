@@ -9,7 +9,7 @@ Description=SAS drive spin control
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c "for i in /sys/class/scsi_disk/*; do echo 1 > "$i"/manage_system_start_stop; echo 1 > "$i"/manage_runtime_start_stop; done"
+ExecStart=/bin/sh -c "for i in /sys/class/scsi_disk/*; do echo 1 > "\$i"/manage_system_start_stop; echo 1 > "\$i"/manage_runtime_start_stop; done"
 
 [Install]
 WantedBy=multi-user.target
