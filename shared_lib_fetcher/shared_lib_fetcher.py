@@ -8,7 +8,7 @@ from pathlib import Path
 from subprocess import check_output
 
 
-def linked_lib(binary: Path, excluded_lib: list[str] = []) -> list[Path]:
+def linked_lib(binary: Path, excluded_lib: list[str] | None = None) -> list[Path]:
     """Get list of path to the dynamic library dependencies of a binary file.
 
     Args:
@@ -31,6 +31,8 @@ def linked_lib(binary: Path, excluded_lib: list[str] = []) -> list[Path]:
     linked = [i.strip().rsplit(' (', 1)[0] for i in ldd_output.splitlines()]
 
     dep_list = []
+    if excluded_lib == None:
+        excluded_lib = []
     for link in linked:
         # Ignore virtual library linux-vdso.so
         #
@@ -46,7 +48,6 @@ def linked_lib(binary: Path, excluded_lib: list[str] = []) -> list[Path]:
 
 
 if __name__ == '__main__':
-    ...
     arg_parser = ArgumentParser()
     arg_parser.add_argument('binary', help='Path to the executable or library.', type=Path)
     arg_parser.add_argument('copy_to', help='Path to where dynamic libraries will be copied to.', type=Path)
