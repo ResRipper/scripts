@@ -70,4 +70,5 @@ if __name__ == '__main__':
 
     dep_list = linked_lib(args.binary, excluded_lib)
     for lib in dep_list:
-        lib.copy_into(target_folder, preserve_metadata=True)
+        if lib.resolve().parent != target_folder.resolve():
+            lib.copy_into(target_folder, preserve_metadata=True)
